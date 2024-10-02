@@ -236,19 +236,20 @@ static NSObject<CallKeepPushDelegate>* _delegate;
         dic = [_delegate mapPushPayload:dic];
     }
     
-    if (!dic || dic[@"aps"] != nil) {
-        NSLog(@"Do not use the 'alert' format for push type %@.", payload.type);
-        if(completion != nil) {
-            completion();
-        }
-        return;
-    }
+    // if (!dic || dic[@"aps"] != nil) {
+    //     NSLog(@"Do not use the 'alert' format for push type %@.", payload.type);
+    //     if(completion != nil) {
+    //         completion();
+    //     }
+    //     return;
+    // }
     
     NSString *uuid = dic[@"uuid"];
-    NSString *callerId = dic[@"caller_id"];
-    NSString *callerName = dic[@"caller_name"];
-    BOOL hasVideo = [dic[@"has_video"] boolValue];
-    NSString *callerIdType = dic[@"caller_id_type"];
+    NSString *sequenceId = dic[@"data"][@"sequenceId"];
+    NSString *displayName = dic[@"data"][@"displayName"];
+    BOOL hasVideo = [dic[@"data"][@"hasVideo"] boolValue];
+    // NSString *callerIdType = dic[@"caller_id_type"];
+    NSString *callerIdType = @"generic";
     
     
     if( uuid == nil) {
@@ -258,10 +259,10 @@ static NSObject<CallKeepPushDelegate>* _delegate;
     NSLog(@"Got here %@.", [dic description]);
     
     [CallKeep reportNewIncomingCall:uuid
-                             handle:callerId
+                             handle:sequenceId
                          handleType:callerIdType
                            hasVideo:hasVideo
-                         callerName:callerName
+                         callerName:displayName
                         fromPushKit:YES
                             payload:dic
               withCompletionHandler:completion];
